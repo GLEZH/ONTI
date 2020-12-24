@@ -163,11 +163,11 @@ int midArifm(int x ) {
 }
 
 //void servoturnleft() {
-  //myservo.write(110);
+//myservo.write(110);
 //}
 
 //void servoturnright() {
-  //myservo.write(127);
+//myservo.write(127);
 //}
 
 void forward() {
@@ -187,7 +187,7 @@ void stop() {
 }
 
 //void straight() {
-  //myservo.write(servoPosition);
+//myservo.write(servoPosition);
 //}
 
 int yaw_route(int x) {
@@ -203,14 +203,14 @@ int yaw_route(int x) {
   yaw =  filter.getYawDeg(); // получение углов yaw из фильтра
 
 
-  if (yaw <= x) {
+  if (yaw < x) {
     do {
       myservo.write(pos_const = pos_const + 5);
       digitalWrite(DIR_1, HIGH);
       analogWrite(SPEED_1, 150);
     } while (yaw < x);
   }
-  if (yaw >= x) {
+  if (yaw > x) {
     do {
       myservo.write(pos_const = pos_const - 5);
       digitalWrite(DIR_1, HIGH);
@@ -260,14 +260,15 @@ void setup() {
 }
 
 void loop() {
-  
-  if (durat_R() == range_min and durat_RU() == side_range_max) {
-    while (k != 1) {
+
+  while (k != 1) {
+
+    if (durat_R() == range_min and durat_RU() == side_range_max) {  //если не работате, удалить второй аргумент
       if (durat_U() < range_min) {
         stop();
         Serial.println("Im stop");
         Serial.println("Turning...");
-        
+
         pos = yaw_route(-180);
         if (pos == -180) {
           stop();
@@ -282,61 +283,62 @@ void loop() {
         forward();
       }
 
-
-      Serial.println("Stop");
-      stop();
-
     }
-  }
-  else if (durat_R() < range_min and durat_RU() < side_range_max) {
-    do {
-      myservo.write(pos_const+5);
-      forward();
-    } while (durat_R() < range_min and durat_RU() < side_range_max);
-  }
-
-  else if (durat_R() > range_min and durat_RU() > side_range_max) {
-    do {
-      myservo.write(pos_const-5);
-      forward();
-    } while (durat_R() > range_min and durat_RU() > side_range_max);
-  }
-
-  stop();
-  
-//-----------------------------------------------
-
-  if (durat_L() == range_min and durat_LU() == side_range_max ) {
-    while (c != 1) {
-      if (durat_U() < range_min) {
-        stop();
-        c++;
-
-
-      }
-      else {
-        pos_const = 117;
-        myservo.write(pos_const);
+    else if (durat_R() < range_min and durat_RU() < side_range_max) {
+      do {
+        myservo.write(pos_const + 5);
         forward();
-      }
+      } while (durat_R() < range_min and durat_RU() < side_range_max);
+    }
 
-
-      Serial.println("Stop");
-      stop();
-
+    else if (durat_R() > range_min and durat_RU() > side_range_max) {
+      do {
+        myservo.write(pos_const - 5);
+        forward();
+      } while (durat_R() > range_min and durat_RU() > side_range_max);
     }
   }
-  else if (durat_L() < range_min and durat_LU() < side_range_max) {
-    do {
-      myservo.write(pos_const+5);
-      forward();
-    } while (durat_L() < range_min and durat_LU() < side_range_max);
-  }
+  Serial.println("Stop");
+  stop();
 
-  else if (durat_L() > range_min and durat_LU() > side_range_max) {
-    do {
-      myservo.write(pos_const-5);
+
+
+
+
+//-----------------------------------------------
+while (c != 1) {
+if (durat_L() == range_min and durat_LU() == side_range_max ) {
+  while (c != 1) {
+    if (durat_U() < range_min) {
+      stop();
+      c++;
+
+
+    }
+    else {
+      pos_const = 117;
+      myservo.write(pos_const);
       forward();
-    } while (durat_L() > range_min and durat_LU() > side_range_max);
-  }
+    }
+
+
+    Serial.println("Stop");
+    stop();
+
+}
+}
+else if (durat_L() < range_min and durat_LU() < side_range_max) {
+  do {
+    myservo.write(pos_const + 5);
+    forward();
+  } while (durat_L() < range_min and durat_LU() < side_range_max);
+}
+
+else if (durat_L() > range_min and durat_LU() > side_range_max) {
+  do {
+    myservo.write(pos_const - 5);
+    forward();
+  } while (durat_L() > range_min and durat_LU() > side_range_max);
+}
+}
 }

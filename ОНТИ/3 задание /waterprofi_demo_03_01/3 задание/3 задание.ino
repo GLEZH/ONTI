@@ -1,6 +1,4 @@
-
 #include <Servo.h>
-
 #include <Wire.h> // библиотека для работы I²C
 #include <TroykaIMU.h> // библиотека для работы с модулями IMU
 
@@ -65,11 +63,19 @@ unsigned int range_min = 60 ;
 
 unsigned int range_max = 200;
 
+int yaw_count_add = 0;
+
 Servo myservo;
 
 int k = 0;
 
 int l = 0;
+
+int c = 0;
+
+int g = 0;
+
+int yaw_count_add1 = 0;
 
 unsigned int pos = 0;
 
@@ -77,12 +83,9 @@ unsigned int pos_const = 117;
 
 const int NUM_READ = 30;
 
-int side_range_max = 58;
-
 float gx, gy, gz, ax, ay, az, mx, my, mz; // Инициализация переменных для данных с гироскопа, акселерометра и компаса
 double yaw, pitch, roll; // Инициализация переменных для углов ориентации (Эйлера)
 float fps = 100; // переменная для хранения частоты выборок фильтра
-
 
 int durat_R() {
   digitalWrite(R_PIN_TRIG, LOW);
@@ -164,24 +167,19 @@ int midArifm(int x ) {
 
 void servoturnleft() {
   myservo.write(137);
-
-
-
 }
 
 void servoturnright() {
   myservo.write(97);
-
 }
 
 void forward() {
-  digitalWrite(DIR_1, HIGH);
-  analogWrite(SPEED_1, 255);
-
+  digitalWrite(DIR_1, LOW);
+  analogWrite(SPEED_1, 150);
 }
 
 void backwards() {
-  digitalWrite(DIR_1, LOW);
+  digitalWrite(DIR_1, HIGH);
   analogWrite(SPEED_1, 150);
 }
 
@@ -266,20 +264,47 @@ void setup() {
 
 void loop() {
 
-  if (durat_R() == range_min and durat_RU() == side_range_max) {
+  if (l != 1) {
+    if (durat_U() || durat_LU()  != range_min) {
+      if (l != 1) {
+        pos = yaw_route(45);
+        if (pos == 45) {
+          l++;
+          stop();
+        }
+      }
 
-    while (k != 4) {
+      forward();
+    }
+  }
+  else {
+    stop();
+  }
+
+  pos = yaw_route(0);
+  if (pos == 0) {
+    stop();
+  }
+  forward();
+  delay(500);
+  stop();
+
+  //-------------------------------
+  while (c != 4) {
+    if (durat_L() == range_min) {
+
+
       if (durat_U() <= range_min) {
         stop();
         Serial.println("Im stop");
         Serial.println("Turning...");
-        l++;
+        c++;
 
-        switch (l) {
+        switch (c) {
           case 1:
-            servoturnleft();
+            servoturnright();
             forward();
-            if (durat_D() == range_min)
+            if (durat_R() == range_min)
             {
               stop();
             }
@@ -287,9 +312,9 @@ void loop() {
 
 
             case 2:
-             servoturnleft();
+             servoturnright();
             forward();
-            if (durat_D() == range_min)
+            if (durat_R() == range_min)
             {
               stop();
               }
@@ -297,9 +322,9 @@ void loop() {
 
 
             case 3:
-            servoturnleft();
+            servoturnright();
             forward();
-            if (durat_D() == range_min)
+            if (durat_R() == range_min)
             {
               stop();
             }
@@ -309,39 +334,55 @@ void loop() {
               stop();
               break;
 
-            }
-            k++;
         }
+        k++;
+      }
 
-        else {
-          Serial.println("Go");
-          pos_const = 117;
-          myservo.write(pos_const);
-          forward();
-        }
+      else {
+        Serial.println("Go");
 
+        forward();
       }
 
 
+
+
     }
-    else if (durat_R() < range_min and durat_RU() < side_range_max) {
+    else if (durat_L() < range_min) {
       do {
-        myservo.write(pos_const - 15);
+        myservo.write(pos_const - 30);
         forward();
-      } while (durat_R() < range_min and durat_RU() < side_range_max);
+      } while (durat_L() < range_min);
+      stop();
+
     }
 
-    else if (durat_R() > range_min and durat_RU() > side_range_max) {
+    else if (durat_L > range_min) {
       do {
-        myservo.write(pos_const + 15);
+        myservo.write(pos_const + 30);
         forward();
-      } while (durat_R() > range_min and durat_RU() > side_range_max);
+      } while (durat_L() > range_min);
+      stop();
     }
-
-    Serial.print("Ending");
-
-    stop();
-
-    delay(500000);
-
   }
+  //------------------------------------
+
+  if (g != 1) {
+    if (durat_U() || durat_RU()  != range_min) {
+      if (l != 1) {
+        myservo.write(pos_const + 30);
+        forward();
+      } while (durat_U() || durat_RU()  != range_min);
+      stop();
+    }
+    else {
+    stop();
+  }
+      }
+
+      forward();
+
+  
+
+
+}

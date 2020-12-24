@@ -3,23 +3,23 @@
 #define SPEED_1      5
 #define DIR_1        4
 
-#define R_PIN_TRIG 28 //R
-#define R_PIN_ECHO 29
+#define R_PIN_TRIG 4  //R
+#define R_PIN_ECHO 5
 
-#define RU_PIN_TRIG 30  //RU 
-#define RU_PIN_ECHO 31
+#define RU_PIN_TRIG 2  //RU 
+#define RU_PIN_ECHO 3
 
-#define U_PIN_TRIG 32  //U 
-#define U_PIN_ECHO 33
+#define U_PIN_TRIG 7  //U 
+#define U_PIN_ECHO 6
 
-#define LU_PIN_TRIG 34  //LU 
-#define LU_PIN_ECHO 35
+#define LU_PIN_TRIG 11  //LU 
+#define LU_PIN_ECHO 10
 
-#define L_PIN_TRIG 36  //L
-#define L_PIN_ECHO 37
+#define L_PIN_TRIG 13  //L
+#define L_PIN_ECHO 12
 
-#define D_PIN_TRIG 38  //D 
-#define D_PIN_ECHO 38
+#define D_PIN_TRIG 1  //D 
+#define D_PIN_ECHO 0
 
 #define SERVO_PIN 9
 
@@ -136,14 +136,14 @@ int midArifm(int x ) {
 }
 
 void servoturnleft() {
-  myservo.write(137);
+  myservo.write(147);
 
 
 
 }
 
 void servoturnright() {
-  myservo.write(97);
+  myservo.write(87);
 
 }
 
@@ -195,88 +195,25 @@ void setup() {
   myservo.write(pos_const);
 
   delay(100);
-
-
 }
 
 void loop() {
-
- while (k != 1)
-    {
-
-  if (durat_R() == range_min and durat_RU() == side_range_max)
-  {
-   
-      if (durat_U() <= range_min)
-      {
-        stop();
-        delay(1000);
-        Serial.println("Im stop");
-        Serial.println("Turning...");
-        servoturnleft();
-        forward();
-        if (durat_D() == range_min)
-        {
-          stop();
-          k++;
-
-        }
-
-      }
-      Serial.println("Go");
-      pos_const = 117;
-      myservo.write(pos_const);
-      forward();
-    
-  }
+  forward();
+  delay(18500);
+  stop();
   
-  else if (durat_R() < range_min and durat_RU() < side_range_max) {
-    do {
-      myservo.write(pos_const-15);
-      forward();
-    } while (durat_R() < range_min and durat_RU() < side_range_max);
-  }
+  servoturnleft();
+  forward();
+  delay(8800);
 
-  else if (durat_R() > range_min and durat_RU() > side_range_max) {
-    do {
-      myservo.write(pos_const+15);
-      forward();
-    } while (durat_R() > range_min and durat_RU() > side_range_max);
-  }
-  }
-    
+  servoturnright();
+  forward();
+  delay(2900);
+  
+  straight();
+  forward();
+  delay(16600);
+  stop();
+  delay(500000);
 
-  //-----------------------------------------
-while (c != 1)
-    {
-  if (durat_L() == range_min and durat_LU() == side_range_max )
-  {
-
-      if (durat_U() <= range_min)
-      {
-        stop();
-        Serial.println("Im stop");
-      }
-
-
-      Serial.println("Go");
-      myservo.write(117);
-      forward();
-
-    
-  }
-  else if (durat_L() < range_min and durat_LU() < side_range_max) {
-    do {
-      myservo.write(pos_const-15);
-      forward();
-    } while (durat_L() < range_min and durat_LU() < side_range_max);
-  }
-
-  else if (durat_L() > range_min and durat_LU() > side_range_max) {
-    do {
-      myservo.write(pos_const+15);
-      forward();
-    } while (durat_L() > range_min and durat_LU() > side_range_max);
-  }
-}
 }
